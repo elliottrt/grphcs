@@ -1,0 +1,15 @@
+# Object files
+*.o
+
+# Graphics Files and Output
+*.obj
+*.ttf
+grphcs
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
