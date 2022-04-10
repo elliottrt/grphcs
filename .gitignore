@@ -2,7 +2,6 @@
 *.o
 
 # Graphics Files and Output
-*.obj
 *.ttf
 grphcs
 
