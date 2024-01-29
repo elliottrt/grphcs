@@ -1,18 +1,19 @@
-CC=gcc
+CPPC=g++
 
 OUT=grphcs
 
-CCFLAGS=-Wall -Wextra -Wpedantic -lSDL2 -lSDL2_ttf -lSDL2_image -msse -O3
+lttf=-lSDL2_ttf
+limg=-lSDL2_image
 
-CSRC=$(wildcard src/*.c)
-CLIB=$(wildcard src/lib/*.c)
+CPPFLAGS=-Wall -Wextra -Wpedantic -lSDL2 -msse -O3 -std=c++11 -ffast-math
+CPPFLAGS := $(CPPFLAGS) -Wno-gnu-anonymous-struct
 
-all: com run
+CPPSRC=$(wildcard src/*.cpp)
 
-com:
-	$(CC) -o $(OUT) $(CSRC) $(CLIB) $(CCFLAGS)
+all: compile run
 
-	rm -f ./src/*.o
+compile:
+	$(CPPC) -o $(OUT) $(CPPSRC) $(CPPFLAGS)
 
 run:
 	./$(OUT)

@@ -12,3 +12,12 @@ grphcs
 *.i*86
 *.x86_64
 *.hex
+
+# Object Files
+*.obj
+*.mtl
+
+# Other
+*.txt
+.DS_Store
+.vscode

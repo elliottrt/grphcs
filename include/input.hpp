@@ -1,16 +1,21 @@
-#ifndef _IO_H
-#define _IO_H
+#ifndef _GRPHCS_INPUT_H
+#define _GRPHCS_INPUT_H
 
 #include <SDL2/SDL.h>
-#include <stdbool.h>
+#include "math.hpp"
 
-typedef struct {
-	int x, y;
-	int wheel;
-	bool button[5];
-} mouse_t;
+#define GRPHCS_INPUT inline
 
-typedef enum key_scancodes {
+typedef enum {
+    MOUSE_BUTTON_LEFT = SDL_BUTTON_LEFT,
+    MOUSE_BUTTON_MIDDLE = SDL_BUTTON_MIDDLE,
+    MOUSE_BUTTON_RIGHT = SDL_BUTTON_RIGHT,
+    MOUSE_BUTTON_X1 = SDL_BUTTON_X1,
+    MOUSE_BUTTON_X2 = SDL_BUTTON_X2,
+    MOUSE_BUTTON_COUNT = 6,
+} GrphcsMouseButton;
+
+typedef enum {
     KEY_A = SDL_SCANCODE_A,
     KEY_B = SDL_SCANCODE_B,
     KEY_C = SDL_SCANCODE_C,
@@ -99,18 +104,54 @@ typedef enum key_scancodes {
     KEY_RALT = SDL_SCANCODE_RALT, /**< alt gr, option */
     KEY_RGUI = SDL_SCANCODE_RGUI, /**< windows, command (apple), meta */
 
-    KEYCOUNT = SDL_NUM_SCANCODES
-} GRPHCS_KEY;
+    KEY_COUNT = SDL_NUM_SCANCODES
+} GrphcsKey;
 
-typedef struct _keyboard_t {
-	bool pressed[KEYCOUNT];
-	bool down[KEYCOUNT];
-	bool released[KEYCOUNT];
-} keyboard_t;
+class GrphcsInput {
+    friend class GrphcsGame;
 
-struct _window_t {
-	SDL_Window *window;
- 	SDL_Renderer *renderer;
-} window;
+public:
+
+    GRPHCS_INPUT GrphcsVec mousePosition(void) { return GrphcsVec(this->mX, this->mY); }
+    GRPHCS_INPUT int mouseX(void) { return this->mX; }
+    GRPHCS_INPUT int mouseY(void) { return this->mY; }
+    GRPHCS_INPUT int mouseWheel(void) { return this->mWheel; }
+    GRPHCS_INPUT bool mousePressed(GrphcsMouseButton button) { return this->mPressed[button]; }
+    GRPHCS_INPUT bool mouseDown(GrphcsMouseButton button) { return this->mDown[button]; }
+    GRPHCS_INPUT bool mouseReleased(GrphcsMouseButton button) { return this->mReleased[button]; }
+
+    GRPHCS_INPUT bool keyPressed(GrphcsKey key) { return this->kPressed[key]; }
+    GRPHCS_INPUT bool keyDown(GrphcsKey key) { return this->kDown[key]; }
+    GRPHCS_INPUT bool keyReleased(GrphcsKey key) { return this->kReleased[key]; }
+
+private:
+
+    int mX, mY;
+    int mWheel;
+    bool mDown[GrphcsMouseButton::MOUSE_BUTTON_COUNT];
+    bool mPressed[GrphcsMouseButton::MOUSE_BUTTON_COUNT];
+    bool mReleased[GrphcsMouseButton::MOUSE_BUTTON_COUNT];
+    
+    bool kPressed[GrphcsKey::KEY_COUNT];
+	bool kDown[GrphcsKey::KEY_COUNT];
+	bool kReleased[GrphcsKey::KEY_COUNT];
+
+    GrphcsInput(void) {
+        memset(this->mDown, 0, sizeof(bool) * GrphcsMouseButton::MOUSE_BUTTON_COUNT);
+        memset(this->kDown, 0, sizeof(bool) * GrphcsKey::KEY_COUNT);
+        this->prepare();
+    }
+
+    void prepare() {
+        memset(this->kPressed,  0, sizeof(bool) * GrphcsKey::KEY_COUNT);
+        memset(this->kReleased, 0, sizeof(bool) * GrphcsKey::KEY_COUNT);
+
+        memset(this->mPressed,  0, sizeof(bool) * GrphcsMouseButton::MOUSE_BUTTON_COUNT);
+        memset(this->mReleased, 0, sizeof(bool) * GrphcsMouseButton::MOUSE_BUTTON_COUNT);
+
+        SDL_GetMouseState(&this->mX, &this->mY);
+    }
+
+};
 
 #endif
