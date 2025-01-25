@@ -1,5 +1,5 @@
-#include "../include/graphics.hpp"
-#include "../include/geometry.hpp"
+#include "graphics.hpp"
+#include "geometry.hpp"
 
 
 GrphcsGraphics::GrphcsGraphics(SDL_Window * window, SDL_Renderer * renderer, SDL_Texture * renderTexture, int xsize, int ysize, float fov) {

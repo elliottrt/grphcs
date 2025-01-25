@@ -1,19 +1,30 @@
-CPPC=g++
 
-OUT=grphcs
+TARGET=main
+SOURCE=src
+INCLUDE=include
 
-lttf=-lSDL2_ttf
-limg=-lSDL2_image
+LIBS=sdl2
+LIB_FLAGS=`pkg-config --libs $(LIBS)`
 
-CPPFLAGS=-Wall -Wextra -Wpedantic -lSDL2 -msse -O3 -std=c++11 -ffast-math
-CPPFLAGS := $(CPPFLAGS) -Wno-gnu-anonymous-struct
+CXXFLAGS:=$(CXXFLAGS) -std=c++11 -Wall -Wextra -Wpedantic -I$(INCLUDE)
 
-CPPSRC=$(wildcard src/*.cpp)
+CXXSRC=$(shell find $(SOURCE) -type f -name '*.cpp')
+CXXOBJ=$(CXXSRC:.cpp=.o)
+CXXDEP=$(CXXSRC:.cpp=.d)
 
-all: compile run
+.PHONY: clean test update
 
-compile:
-	$(CPPC) -o $(OUT) $(CPPSRC) $(CPPFLAGS)
+all: $(TARGET)
 
-run:
-	./$(OUT)
+-include $(CXXDEP)
+
+$(TARGET): $(CXXOBJ)
+	$(CXX) $(CXXFLAGS) -o $@ $(CXXOBJ) $(LIB_FLAGS)
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -MMD -MP -c -o $@ $<
+
+clean:
+	$(RM) $(TARGET)
+	$(RM) $(SOURCE)/*.o $(SOURCE)/*.d
+	$(RM) $(SOURCE)/**/*.o $(SOURCE)/**/*.d

@@ -1,7 +1,6 @@
 #ifndef _GRPHCS_MATH_H
 #define _GRPHCS_MATH_H
 
-#include <immintrin.h>
 #define _GNU_SOURCE
 #include <cmath>
 #include <cassert>
@@ -12,11 +11,11 @@
 #define GRPHCS_MATH inline
 
 #define DEG2RAD 0.017453
-GRPHCS_MATH float deg2rad(float deg) { return deg * DEG2RAD; }
+GRPHCS_MATH constexpr float deg2rad(float deg) { return deg * DEG2RAD; }
 #define RAD2DEG 57.295780
-GRPHCS_MATH float rad2deg(float rad) { return rad * RAD2DEG; }
+GRPHCS_MATH constexpr float rad2deg(float rad) { return rad * RAD2DEG; }
 
-union GrphcsVec;
+struct GrphcsVec;
 
 struct GrphcsMat {
 
@@ -35,7 +34,7 @@ struct GrphcsMat {
 
     GrphcsMat(void) {}
 
-    inline void print(void) {
+    void print(void) const {
         /*
         printf("%f %f %f %f\n", this->m00, this->m01, this->m02, this->m03);
         printf("%f %f %f %f\n", this->m10, this->m11, this->m12, this->m13);
@@ -47,9 +46,9 @@ struct GrphcsMat {
         }
     }
 
-    GrphcsMat quickInverse(void);
+    GrphcsMat quickInverse(void) const;
 
-    GrphcsMat operator*(GrphcsMat &o) {
+    GrphcsMat operator*(const GrphcsMat &o) const {
         GrphcsMat m;
 
         for (int c = 0; c < 4; c++) {
@@ -64,7 +63,7 @@ struct GrphcsMat {
         return m;
     }
 
-    bool operator==(GrphcsMat o) const {
+    bool operator==(const GrphcsMat &o) const {
         /*
         return this->m00 == o.m00 && this->m01 == o.m01 && this->m02 == o.m02 && this->m03 == o.m03 &&
                this->m10 == o.m10 && this->m11 == o.m11 && this->m12 == o.m12 && this->m13 == o.m13 &&
@@ -85,20 +84,19 @@ struct GrphcsMat {
     static GrphcsMat makeProjectionMatrix(float fov, float aspect, float near, float far);
 
     // See https://github.com/OneLoneCoder/videos/blob/master/OneLoneCoder_olcEngine3D_Part3.cpp
-    static GrphcsMat pointAt(GrphcsVec& pos, GrphcsVec& target, GrphcsVec& up);
+    static GrphcsMat pointAt(const GrphcsVec &pos, const GrphcsVec &target, const GrphcsVec &up);
 
     // See https://www.3dgep.com/understanding-the-view-matrix/
-    static GrphcsMat lookAt(GrphcsVec& pos, GrphcsVec& target, GrphcsVec &up);
+    static GrphcsMat lookAt(const GrphcsVec &pos, const GrphcsVec &target, const GrphcsVec &up);
 
     // See https://www.3dgep.com/understanding-the-view-matrix/
-    static GrphcsMat fpsView(GrphcsVec& pos, float pitch, float yaw);
+    static GrphcsMat fpsView(const GrphcsVec &pos, float pitch, float yaw);
 
 };
 
-union GrphcsVec {
+struct GrphcsVec {
 
-    struct { float x, y, z, w; };
-    __v4sf i;
+    float x, y, z, w;
 
     GrphcsVec(float x, float y, float z, float w) {
         this->x = x; this->y = y;
@@ -125,27 +123,23 @@ union GrphcsVec {
         this->z = 0; this->w = 0;
     }
 
-    GrphcsVec(__v4sf i) {
-        this->i = i;
-    }
-
-    GRPHCS_MATH float dot(GrphcsVec &b) {
+    GRPHCS_MATH float dot(const GrphcsVec &b) const {
         return this->x * b.x + this->y * b.y + this->z * b.z + this->w * b.w;
     }
 
-    GRPHCS_MATH float squareMagnitude(void) {
+    GRPHCS_MATH float squareMagnitude(void) const {
         return this->x * this->x + this->y * this->y + this->z * this->z + this->w * this->w;
     }
 
-    GRPHCS_MATH float magnitude(void) {
+    GRPHCS_MATH float magnitude(void) const {
         return sqrtf(this->squareMagnitude());
     }
 
-    GRPHCS_MATH float sum(void) {
+    GRPHCS_MATH float sum(void) const {
         return this->x + this->y + this->z + this->w;
     }
 
-    GRPHCS_MATH GrphcsVec cross(GrphcsVec &b) {
+    GRPHCS_MATH GrphcsVec cross(GrphcsVec &b) const {
         return GrphcsVec ( 
             this->y * b.z - this->z * b.y, 
             this->z * b.x - this->x * b.z, 
@@ -153,12 +147,22 @@ union GrphcsVec {
         );
     }
 
-    GRPHCS_MATH GrphcsVec normalized(void) {
-        return GrphcsVec( this->i / this->magnitude() );
+    GRPHCS_MATH GrphcsVec normalized(void) const {
+        float magnitude = this->magnitude();
+        return GrphcsVec(
+            x / magnitude,
+            y / magnitude,
+            z / magnitude,
+            w / magnitude
+        );
     } 
 
     GRPHCS_MATH void normalize(void) {
-        this->i /= this->magnitude();
+        float magnitude = this->magnitude();
+        x /= magnitude;
+        y /= magnitude;
+        z /= magnitude;
+        w /= magnitude;
     } 
 
     GRPHCS_MATH void print(void) {
@@ -193,16 +197,44 @@ union GrphcsVec {
         return rotation;
     }
 
-    GrphcsVec operator-(GrphcsVec & other) { return this->i - other.i; }
+    GrphcsVec operator-(const GrphcsVec &other) const {
+        return GrphcsVec(
+            x - other.x,
+            y - other.y,
+            z - other.z,
+            w - other.w
+        );
+    }
 
-    GrphcsVec operator+(GrphcsVec & other) { return this->i + other.i; }
+    GrphcsVec operator+(const GrphcsVec &other) const {
+        return GrphcsVec(
+            x + other.x,
+            y + other.y,
+            z + other.z,
+            w + other.w
+        );
+    }
 
-    GrphcsVec operator/(float other) { return this->i / other; }
+    GrphcsVec operator/(float other) const {
+        return GrphcsVec(
+            x / other,
+            y / other,
+            z / other,
+            w / other
+        );
+    }
 
-    GrphcsVec operator*(float other) { return this->i * other; }
+    GrphcsVec operator*(float other) const {
+        return GrphcsVec(
+            x * other,
+            y * other,
+            z * other,
+            w * other
+        );
+    }
 
     // TODO: try to optimize
-    GrphcsVec operator*(GrphcsMat & m) {
+    GrphcsVec operator*(const GrphcsMat &m) const {
         /*
         return GrphcsVec (
             this->x * m.m00 + this->y * m.m10 + this->z * m.m20 + this->w * m.m30,
@@ -219,15 +251,35 @@ union GrphcsVec {
         );
     }
 
-    void operator-=(GrphcsVec & other) { this->i -= other.i; }
+    void operator-=(const GrphcsVec &other) { 
+        x -= other.x;
+        y -= other.y;
+        z -= other.z;
+        w -= other.w;
+    }
 
-    void operator+=(GrphcsVec & other) { this->i += other.i; }
+    void operator+=(const GrphcsVec  other) {
+        x += other.x;
+        y += other.y;
+        z += other.z;
+        w += other.w;
+    }
 
-    void operator/=(float other) { this->i /= other; }
+    void operator/=(float other) {
+        x /= other;
+        y /= other;
+        z /= other;
+        w /= other;
+    }
 
-    void operator*=(float other) { this->i *= other; }
+    void operator*=(float other) {
+        x *= other;
+        y *= other;
+        z *= other;
+        w *= other;
+    }
 
-    void operator*=(GrphcsMat & m) {
+    void operator*=(const GrphcsMat &m) {
         *this = *this * m;
     }
 

@@ -1,5 +1,5 @@
-#include "../include/game.hpp"
-#include "../include/util.hpp"
+#include "game.hpp"
+#include "util.hpp"
 
 GrphcsVec p0 (0, -1, 5),
           p1 (-1, 1, 5),
@@ -9,8 +9,8 @@ GrphcsPixel r (255, 0, 0),
             g (0, 255, 0),
             b (0, 0, 255);  
 
-GrphcsGeometry * geo;
-GrphcsGame * game;
+GrphcsGeometry *geo;
+GrphcsGame *game;
 
 float movespeed = 5.f;
 float rotspeed = 1 / 3.f;
@@ -58,7 +58,7 @@ void render(GrphcsContext *ctx) {
 
     grphcsTimingStart();
     ctx->drawGeometry(geo, GrphcsVec(0, 0, 10), true);
-    grphcsTimingEnd(NULL);
+    grphcsTimingEnd("Frame");
 
 }
 

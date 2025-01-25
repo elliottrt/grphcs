@@ -1,4 +1,4 @@
-#include "../include/camera.hpp"
+#include "camera.hpp"
 
 GrphcsCamera::GrphcsCamera(float fov, int xSize, int ySize) {
 

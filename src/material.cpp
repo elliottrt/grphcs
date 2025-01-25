@@ -1,4 +1,4 @@
-#include "../include/material.hpp"
+#include "material.hpp"
 
 GrphcsMaterialList::GrphcsMaterialList(void) {}
 

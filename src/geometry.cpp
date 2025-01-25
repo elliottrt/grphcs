@@ -1,4 +1,4 @@
-#include "../include/geometry.hpp"
+#include "geometry.hpp"
 
 static std::vector<GrphcsGeometry *> geometries;
 static grphcs_material_id_t currentMaterial = -1;
@@ -199,8 +199,8 @@ void GrphcsGeometry::addTriangle(grphcs_tri_id_t a, grphcs_tri_id_t b, grphcs_tr
     tri.v1 = a; tri.v2 = b; tri.v3 = c;
     tri.material = currentMaterial;
 
-    GrphcsVec u = (this->vertices[tri.v2] - this->vertices[tri.v1]).i;
-    GrphcsVec v = (this->vertices[tri.v3] - this->vertices[tri.v1]).i;
+    GrphcsVec u = this->vertices[tri.v2] - this->vertices[tri.v1];
+    GrphcsVec v = this->vertices[tri.v3] - this->vertices[tri.v1];
 
     tri.normal = u.cross(v);
     tri.normal.normalize();

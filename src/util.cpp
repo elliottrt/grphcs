@@ -1,4 +1,4 @@
-#include "../include/util.hpp"
+#include "util.hpp"
 
 #include <ctime>
 #include <cstdio>

@@ -1,4 +1,4 @@
-#include "../include/game.hpp"
+#include "game.hpp"
 
 GrphcsGame::GrphcsGame(char const * title, int xsize, int ysize, float fov,
     GrphcsUpdateFunction updateFunction, GrphcsRenderFunction renderFunction) {

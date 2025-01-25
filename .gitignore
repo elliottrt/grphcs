@@ -12,6 +12,7 @@ grphcs
 *.i*86
 *.x86_64
 *.hex
+main
 
 # Object Files
 *.obj

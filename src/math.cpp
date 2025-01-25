@@ -1,6 +1,6 @@
-#include "../include/math.hpp"
+#include "math.hpp"
 
-GrphcsMat GrphcsMat::quickInverse(void) {
+GrphcsMat GrphcsMat::quickInverse(void) const {
     GrphcsMat matrix = GrphcsMat();
     matrix.m[0][0] = this->m[0][0]; matrix.m[0][1] = this->m[1][0]; matrix.m[0][2] = this->m[2][0]; matrix.m[0][3] = 0.0f;
     matrix.m[1][0] = this->m[0][1]; matrix.m[1][1] = this->m[1][1]; matrix.m[1][2] = this->m[2][1]; matrix.m[1][3] = 0.0f;
@@ -30,7 +30,7 @@ GrphcsMat GrphcsMat::makeProjectionMatrix(float fov, float aspect, float near, f
 
 }
 
-GrphcsMat GrphcsMat::pointAt(GrphcsVec& pos, GrphcsVec& target, GrphcsVec& up) {
+GrphcsMat GrphcsMat::pointAt(const GrphcsVec &pos, const GrphcsVec &target, const GrphcsVec &up) {
 
     GrphcsVec nForward = (target - pos).normalized();
 
@@ -60,7 +60,7 @@ GrphcsMat GrphcsMat::pointAt(GrphcsVec& pos, GrphcsVec& target, GrphcsVec& up) {
 }
 
 // See https://www.3dgep.com/understanding-the-view-matrix/
-GrphcsMat GrphcsMat::lookAt(GrphcsVec& pos, GrphcsVec& target, GrphcsVec &up) {
+GrphcsMat GrphcsMat::lookAt(const GrphcsVec &pos, const GrphcsVec &target, const GrphcsVec &up) {
     //return GrphcsMat::pointAt(pos, target, up).quickInverse();
 
     GrphcsVec zaxis = (pos - target).normalized();    // The "forward" vector.
@@ -89,7 +89,7 @@ GrphcsMat GrphcsMat::lookAt(GrphcsVec& pos, GrphcsVec& target, GrphcsVec &up) {
 
 }
 
-GrphcsMat GrphcsMat::fpsView(GrphcsVec& pos, float pitch, float yaw) {
+GrphcsMat GrphcsMat::fpsView(const GrphcsVec &pos, float pitch, float yaw) {
 
     float cosPitch = cosf(pitch);
     float sinPitch = sinf(pitch);

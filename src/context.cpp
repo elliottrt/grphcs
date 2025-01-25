@@ -1,5 +1,5 @@
-#include "../include/context.hpp"
-#include "../include/geometry.hpp"
+#include "context.hpp"
+#include "geometry.hpp"
 
 GrphcsContext::GrphcsContext(int xSize, int ySize, float fov, float * depthb, GrphcsPixel * pixelb, grphcs_pickbuffer_t * pickb) {
     this->camera = GrphcsCamera(fov, xSize, ySize);
@@ -305,17 +305,19 @@ void GrphcsContext::flatTopTriangle(GrphcsVec v1, GrphcsVec v2, GrphcsVec v3, Gr
     if (fabsf(d32.y) < 1) d32.y /= fabsf(d32.y);
     if (isnan(d32.y)) return;
 
-    GrphcsVec numerators = { d31.x, d32.x, d31.z, d32.z };
-    GrphcsVec denominators = { d31.y, d32.y, d31.y, d32.y };
-
-    numerators.i /= denominators.i;
+    GrphcsVec slopes = {
+        d31.x / d31.y,
+        d32.x / d32.y,
+        d31.z / d31.y,
+        d32.z / d32.y
+    };
 
     GrphcsVec positions = { v3.x, v3.x, v3.z, v3.z };
 
     for (int scanlineY = floorf(v3.y); scanlineY >= ceilf(v1.y); scanlineY--)
     {
         this->_hline(scanlineY, positions, color);
-        positions -= numerators;
+        positions -= slopes;
     }
 }
 
@@ -328,16 +330,19 @@ void GrphcsContext::flatBottomTriangle(GrphcsVec v1, GrphcsVec v2, GrphcsVec v3,
     if (fabsf(d31.y) < 1) d31.y /= fabsf(d31.y);
     if (isnan(d31.y)) return;
 
-    GrphcsVec numerators = GrphcsVec(d21.x, d31.x, d21.z, d31.z);
-    GrphcsVec denominators = GrphcsVec(d21.y, d31.y, d21.y, d31.y);
-    numerators.i /= denominators.i;
+    GrphcsVec slopes = GrphcsVec(
+        d21.x / d21.y, 
+        d31.x / d31.y, 
+        d21.z / d21.y,
+        d31.z / d31.y
+    );
 
     GrphcsVec positions = { v1.x, v1.x, v1.z, v1.z };
 
     for (int scanlineY = floorf(v1.y); scanlineY < ceilf(v2.y); scanlineY++)
     {
         this->_hline(scanlineY, positions, color);
-        positions += numerators;
+        positions += slopes;
     }
 }
 
